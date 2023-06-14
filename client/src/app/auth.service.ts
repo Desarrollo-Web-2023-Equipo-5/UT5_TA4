@@ -17,8 +17,7 @@ export class AuthService {
   }
 
 
-  logout() {
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
+  testEndpoint() {
+    return this.http.get('http://localhost:3000/api/test');
   }
 }
