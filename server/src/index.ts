@@ -5,36 +5,40 @@ import jwt from 'jsonwebtoken';
 import fs from "fs";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
+const useCookies = true;
+
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors())
+app.use(cors({ credentials: true, origin: '*' }))
 app.use(cookieParser());
 
 const validateJWT = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies["x-token"];
+    if (useCookies) {
+        const token = req.cookies["x-token"];
 
-    if (token) {
-        try {
-            jwt.verify(token, RSA_PRIVATE_KEY, (err: any, decoded: any) => {
-                if (err) {
-                    throw err;
-                }
-                // req.body.user = decoded.subject;
+        if (token) {
+            try {
+                jwt.verify(token, RSA_PRIVATE_KEY, (err: any, decoded: any) => {
+                    if (err) {
+                        throw err;
+                    }
 
-                // console.log(decoded.subject)
-                console.log("VALID TOKEN", decoded)
-                next();
-            });
-        } catch (error) {
+                    console.log("VALID TOKEN", decoded)
+                    next();
+                });
+            } catch (error) {
+                return res.status(401).json({
+                    msg: "Invalid token"
+                })
+            }
+        } else {
             return res.status(401).json({
-                msg: "Invalid token"
+                msg: "No token"
             })
         }
-
     }
-
-
 }
 
 app.route('/api/login')
@@ -60,12 +64,14 @@ export function loginRoute(req: Request, res: Response) {
 
         const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
             algorithm: 'RS256',
-            expiresIn: '5s',
+            expiresIn: '24h',
             subject: userId
         })
 
         // send the JWT back to the user
-        res.cookie("x-token", jwtBearerToken, { httpOnly: false, secure: false });
+        if (useCookies) {
+            res.cookie("x-token", jwtBearerToken, { httpOnly: true, secure: false, sameSite: "none" });
+        }
         return res.status(200).json({ msg: "login ok" });
     }
     else {
