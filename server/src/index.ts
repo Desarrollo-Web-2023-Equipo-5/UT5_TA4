@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 import fs from "fs";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import path from "path";
 const app = express();
 
 app.use(bodyParser.json());
@@ -50,9 +49,7 @@ app.route('/api/test')
 
 const RSA_PRIVATE_KEY = fs.readFileSync('./src/demos/private.key');
 
-// const privateKeyPath = path.join(__dirname, '../demos/private.key');
-// const RSA_PRIVATE_KEY = fs.readFileSync(privateKeyPath, 'utf8');
-console.log(__dirname);
+
 
 export function loginRoute(req: Request, res: Response) {
 
