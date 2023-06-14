@@ -22,6 +22,7 @@ import { Router } from '@angular/router';
     <div class="form-buttons">
         <button class="button button-primary" 
                 (click)="login()">Login</button>
+        <button (click)="testEndpoint()">Test Endpoint</button>
     </div>
 </form>`})
 export class LoginComponent {
@@ -49,5 +50,14 @@ export class LoginComponent {
           }
         );
     }
+  }
+
+  testEndpoint() {
+    this.authService.testEndpoint()
+      .subscribe(
+        () => {
+          console.log("Endpoint is working");
+        }
+      );
   }
 }
